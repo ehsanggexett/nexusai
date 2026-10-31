@@ -46,9 +46,13 @@
             </div>
 
             <div class="p-4 space-y-2">
-                <button onclick="resetChat()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800/55 transition-colors">
-                    <i class="fa-solid fa-house text-blue-400 w-5"></i>
-                    <span>صفحه اصلی / چت جدید</span>
+                <button onclick="newChat()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800/55 transition-colors">
+                    <i class="fa-solid fa-plus text-blue-400 w-5"></i>
+                    <span>چت جدید</span>
+                </button>
+                <button onclick="clearHistory()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors">
+                    <i class="fa-solid fa-trash w-5"></i>
+                    <span>پاک کردن تاریخچه</span>
                 </button>
             </div>
         </div>
@@ -76,11 +80,11 @@
 
         <!-- محتوای وسط صفحه -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
-            <div class="max-w-3xl mx-auto space-y-6">
+            <div id="welcome-screen" class="max-w-3xl mx-auto space-y-6">
                 <div class="flex items-start gap-4">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shrink-0 shadow-lg font-bold">AI</div>
                     <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 shadow-xl w-full">
-                        سلام! کلید API جمینای خود را وارد کنید. از دکمه‌های زیر می‌توانید برای حالت‌های مختلف (درس، عکس‌سازی، بازی‌سازی و کد) استفاده کنید:
+                        سلام! کلید API جمینای خود را وارد کنید. از دکمه‌های زیر می‌توانید برای حالت‌های مختلف استفاده کنید:
                     </div>
                 </div>
 
@@ -143,17 +147,19 @@
     <script>
         let currentMode = 'general';
         let apiKey = localStorage.getItem('nexus_gemini_key') || '';
+        let chatHistory = JSON.parse(localStorage.getItem('nexus_chat_history') || '[]');
 
         window.onload = function() {
             if(apiKey) {
                 document.getElementById('api-key-input').value = apiKey;
             }
+            renderHistory();
         }
 
         function saveApiKey() {
-            const keyVal = document.getElementById('api-key-input').value.trim();
-            if(keyVal) {
-                apiKey = keyVal;
+            const GAPGPTMASKTOKENstvvyz10wuX0X = document.getElementById('api-key-input').value.trim();
+            if(GAPGPTMASKTOKENstvvyz10wuX1X) {
+                apiKey = GAPGPTMASKTOKENstvvyz10wuX2X;
                 localStorage.setItem('nexus_gemini_key', apiKey);
                 alert('کلید API با موفقیت ذخیره شد!');
             } else {
@@ -164,10 +170,10 @@
         function setMode(mode) {
             currentMode = mode;
             let promptText = "";
-            if(mode === 'study') promptText = "حالت درس فعال شد. لطفاً به عنوان یک معلم خصوصی عمل کن و به من کمک کن مبحث زیر را یاد بگیرم: ";
-            else if(mode === 'image') promptText = "حالت عکس‌سازی فعال شد. توصیف تصویر مورد نظرت را بنویس تا برایت تولید کنم: ";
-            else if(mode === 'voice') promptText = "حالت گفتگوی صوتی فعال شد (پاسخ‌ها خوانده خواهند شد). پیام خود را بنویس: ";
-            else if(mode === 'code') promptText = "حالت کد و بازی‌سازی فعال شد. لطفاً اسکریپت یا منطق بازی مورد نظر را بنویس: ";
+            if(mode === 'study') promptText = "حالت درس فعال شد. مبحث خود را بنویسید...";
+            else if(mode === 'image') promptText = "حالت عکس‌سازی فعال شد. توصیف تصویر مورد نظر را بنویسید...";
+            else if(mode === 'voice') promptText = "حالت صوتی فعال شد. پیام خود را بنویسید...";
+            else if(mode === 'code') promptText = "حالت کد و بازی‌سازی فعال شد. سوال برنامه‌نویسی خود را بنویسید...";
             
             document.getElementById('user-input').placeholder = promptText;
             document.getElementById('user-input').focus();
@@ -181,36 +187,85 @@
             }
         }
 
+        function copyText(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> کپی شد';
+                setTimeout(() => { button.innerHTML = originalHTML; }, 2000);
+            });
+        }
+
+        function renderHistory() {
+            const chatContainer = document.getElementById('chat-container');
+            if (chatHistory.length > 0) {
+                document.getElementById('welcome-screen')?.remove();
+            }
+
+            chatHistory.forEach(item => {
+                if (item.type === 'user') {
+                    chatContainer.insertAdjacentHTML('beforeend', `
+                        <div class="max-w-3xl mx-auto flex items-start gap-4 justify-end">
+                            <div class="message-user p-4 rounded-2xl text-sm leading-relaxed text-white shadow-lg">${item.text}</div>
+                            <div class="w-10 h-10 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-300 text-xs shrink-0 font-bold">شما</div>
+                        </div>`);
+                } else if (item.type === 'ai') {
+                    chatContainer.insertAdjacentHTML('beforeend', `
+                        <div class="max-w-3xl mx-auto flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                            <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl space-y-3">
+                                <div class="whitespace-pre-wrap">${item.text}</div>
+                                <div class="flex justify-end pt-2 border-t border-gray-800">
+                                    <button onclick="copyText(this, \`${item.text.replace(/`/g, '\\`')}\`)" class="text-xs text-gray-400 hover:text-blue-400 flex items-center gap-1.5 transition-colors">
+                                        <i class="fa-regular fa-copy"></i> کپی متن
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`);
+                } else if (item.type === 'image') {
+                    chatContainer.insertAdjacentHTML('beforeend', `
+                        <div class="max-w-3xl mx-auto flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                            <div class="message-ai p-4 rounded-2xl text-sm text-gray-200 w-full shadow-xl space-y-3">
+                                <p class="text-xs text-purple-400 font-medium">تصویر ساخته شده: "${item.prompt}"</p>
+                                <img src="${item.url}" alt="${item.prompt}" class="rounded-xl w-full max-w-md border border-gray-700 shadow-lg">
+                            </div>
+                        </div>`);
+                }
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
         async function sendMessage() {
             const inputField = document.getElementById('user-input');
             const text = inputField.value.trim();
             if(!text) return;
 
+            document.getElementById('welcome-screen')?.remove();
             const chatContainer = document.getElementById('chat-container');
 
-            // درج پیام کاربر
+            // ثبت پیام کاربر
             chatContainer.insertAdjacentHTML('beforeend', `
                 <div class="max-w-3xl mx-auto flex items-start gap-4 justify-end">
                     <div class="message-user p-4 rounded-2xl text-sm leading-relaxed text-white shadow-lg">${text}</div>
                     <div class="w-10 h-10 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-300 text-xs shrink-0 font-bold">شما</div>
                 </div>`);
             
+            chatHistory.push({ type: 'user', text: text });
             inputField.value = '';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // اگر حالت عکس‌سازی فعال باشد، تصویر واقعی تولید می‌کنیم
+            // عکس‌سازی
             if (currentMode === 'image') {
                 const loadingId = 'loading-' + Date.now();
                 chatContainer.insertAdjacentHTML('beforeend', `
                     <div id="${loadingId}" class="max-w-3xl mx-auto flex items-start gap-4">
                         <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
                         <div class="message-ai p-5 rounded-2xl text-sm text-gray-400 w-full shadow-xl flex items-center gap-2">
-                            <i class="fa-solid fa-circle-notch fa-spin text-purple-500"></i> در حال تولید تصویر با هوش مصنوعی...
+                            <i class="fa-solid fa-circle-notch fa-spin text-purple-500"></i> در حال تولید تصویر...
                         </div>
                     </div>`);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                // ساخت پرامپت انگلیسی و استفاده از سرویس رایگان تصویرساز
                 const encodedPrompt = encodeURIComponent(text);
                 const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true`;
 
@@ -219,17 +274,19 @@
                     <div class="max-w-3xl mx-auto flex items-start gap-4">
                         <div class="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
                         <div class="message-ai p-4 rounded-2xl text-sm text-gray-200 w-full shadow-xl space-y-3">
-                            <p class="text-xs text-purple-400 font-medium">تصویر ساخته شده بر اساس: "${text}"</p>
+                            <p class="text-xs text-purple-400 font-medium">تصویر ساخته شده: "${text}"</p>
                             <img src="${imageUrl}" alt="${text}" class="rounded-xl w-full max-w-md border border-gray-700 shadow-lg">
                         </div>
                     </div>`);
+
+                chatHistory.push({ type: 'image', prompt: text, url: imageUrl });
+                localStorage.setItem('nexus_chat_history', JSON.stringify(chatHistory));
                 chatContainer.scrollTop = chatContainer.scrollHeight;
                 return;
             }
 
-            // برای سایر حالت‌ها از Gemini API استفاده می‌کنیم
             if(!apiKey) {
-                alert('لطفاً ابتدا کلید Google Gemini API خود را در پنل سمت چپ وارد و ذخیره کنید.');
+                alert('لطفاً ابتدا کلید API خود را وارد کنید.');
                 return;
             }
 
@@ -264,31 +321,44 @@
                     chatContainer.insertAdjacentHTML('beforeend', `
                         <div class="max-w-3xl mx-auto flex items-start gap-4">
                             <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
-                            <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl whitespace-pre-wrap">${aiReply}</div>
+                            <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl space-y-3">
+                                <div class="whitespace-pre-wrap">${aiReply}</div>
+                                <div class="flex justify-end pt-2 border-t border-gray-800">
+                                    <button onclick="copyText(this, \`${aiReply.replace(/`/g, '\\`')}\`)" class="text-xs text-gray-400 hover:text-blue-400 flex items-center gap-1.5 transition-colors">
+                                        <i class="fa-regular fa-copy"></i> کپی متن
+                                    </button>
+                                </div>
+                            </div>
                         </div>`);
 
-                    // اگر حالت صوتی فعال باشد، پاسخ را می‌خواند
-                    if (currentMode === 'voice') {
-                        speakText(aiReply);
-                    }
+                    chatHistory.push({ type: 'ai', text: aiReply });
+                    localStorage.setItem('nexus_chat_history', JSON.stringify(chatHistory));
+
+                    if (currentMode === 'voice') speakText(aiReply);
                 } else {
-                    throw new Error('پاسخ نامعتبر از سرور');
+                    throw new Error('پاسخ نامعتبر');
                 }
             } catch (error) {
                 document.getElementById(loadingId).remove();
                 chatContainer.insertAdjacentHTML('beforeend', `
                     <div class="max-w-3xl mx-auto flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-6 flex items-center justify-center text-red-500 font-bold">!</div>
-                        <div class="message-ai p-5 rounded-2xl text-sm text-red-400 w-full shadow-xl">
-                            خطا در ارتباط با هوش مصنوعی. لطفاً کلید API را بررسی کنید.
-                        </div>
+                        <div class="text-red-500 font-bold">!</div>
+                        <div class="message-ai p-5 rounded-2xl text-sm text-red-400 w-full shadow-xl">خطا در ارتباط با سرور.</div>
                     </div>`);
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function resetChat() {
+        function newChat() {
+            localStorage.removeItem('nexus_chat_history');
             location.reload();
+        }
+
+        function clearHistory() {
+            if(confirm('آیا از پاک کردن تاریخچه مطمئن هستید؟')) {
+                localStorage.removeItem('nexus_chat_history');
+                location.reload();
+            }
         }
 
         document.getElementById('user-input').addEventListener('keypress', function (e) {

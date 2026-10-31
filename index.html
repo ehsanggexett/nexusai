@@ -11,117 +11,140 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
         * { font-family: 'Vazirmatn', sans-serif; }
-        body { background-color: #090d16; color: #e2e8f0; }
-        .sidebar { background-color: #0f172a; border-left: 1px solid #1e293b; }
-        .nav-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        body { background-color: #080c14; color: #e2e8f0; }
+        .sidebar { background-color: #0d1322; border-left: 1px solid #1a2234; }
+        .action-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            transition: all 0.25s ease;
         }
-        .nav-btn:hover {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: rgba(59, 130, 246, 0.4);
-            transform: translateX(-3px);
-        }
-        .nav-btn.active {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(147, 51, 234, 0.25));
+        .action-card:hover {
             border-color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
         }
-        .chat-area { background: radial-gradient(circle at center, #0f172a 0%, #090d16 100%); }
-        .message-ai { background: #131c31; border: 1px solid #1e293b; }
-        .message-user { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .action-card.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+        .message-ai { background: #111827; border: 1px solid #1f2937; }
+        .message-user { background: #2563eb; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #080c14; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
     <!-- سایدبار سمت راست -->
-    <aside class="w-80 sidebar flex flex-col justify-between hidden lg:flex select-none">
+    <aside class="w-72 sidebar flex flex-col justify-between hidden lg:flex select-none">
         <div>
-            <!-- لوگو و نام NexusAI -->
-            <div class="p-6 flex items-center gap-3 border-b border-slate-800/80">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg shadow-blue-500/20">
+            <!-- لوگو -->
+            <div class="p-6 flex items-center gap-3 border-b border-gray-800/60">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-lg shadow-lg shadow-blue-600/30">
                     <i class="fa-solid fa-atom"></i>
                 </div>
                 <div>
                     <h1 class="text-lg font-bold tracking-wider text-white">NexusAI</h1>
-                    <p class="text-[11px] text-slate-400">هاب پیشرفته هوش مصنوعی</p>
+                    <p class="text-[11px] text-gray-400">هاب چند هوش مصنوعی</p>
                 </div>
             </div>
 
-            <!-- دکمه‌های گزینش حالت -->
-            <div class="p-4 space-y-2.5">
-                <p class="text-[11px] font-semibold text-slate-500 px-3 uppercase tracking-wider mb-3">حالت‌های تخصصی</p>
-                
-                <button onclick="setMode('general')" id="btn-general" class="nav-btn active w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300">
-                    <i class="fa-solid fa-comments text-blue-400 text-base w-5 text-center"></i>
-                    <span>گفتگوی آزاد</span>
-                </button>
-
-                <button onclick="setMode('study')" id="btn-study" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300">
-                    <i class="fa-solid fa-graduation-cap text-emerald-400 text-base w-5 text-center"></i>
-                    <span>حالت درس (آموزشی)</span>
-                </button>
-
-                <button onclick="setMode('image')" id="btn-image" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300">
-                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400 text-base w-5 text-center"></i>
-                    <span>تصویرسازی</span>
-                </button>
-
-                <button onclick="setMode('voice')" id="btn-voice" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300">
-                    <i class="fa-solid fa-microphone-lines text-rose-400 text-base w-5 text-center"></i>
-                    <span>حالت صوتی</span>
-                </button>
-
-                <button onclick="setMode('code')" id="btn-code" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-sm font-medium text-slate-300">
-                    <i class="fa-solid fa-code text-amber-400 text-base w-5 text-center"></i>
-                    <span>حالت برنامه‌نویسی</span>
+            <!-- منوی اصلی سایدبار -->
+            <div class="p-4 space-y-2">
+                <button onclick="setMode('general')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800/55 transition-colors">
+                    <i class="fa-solid fa-house text-blue-400 w-5"></i>
+                    <span>صفحه اصلی</span>
                 </button>
             </div>
         </div>
 
-        <!-- اطلاعات پایین سایدبار -->
-        <div class="p-4 border-t border-slate-800/80 m-4 rounded-xl bg-slate-900/50 flex items-center justify-between text-xs text-slate-400">
-            <span>وضعیت اتصال</span>
-            <span class="flex items-center gap-1.5 text-emerald-400 font-medium">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                آماده به کار
-            </span>
+        <div class="p-4 border-t border-gray-800/60 text-xs text-gray-500 text-center">
+            NexusAI Engine &copy; 2026
         </div>
     </aside>
 
-    <!-- بخش چت و محتوای اصلی -->
-    <main class="flex-1 flex flex-col h-full chat-area relative">
-        <!-- هدر بالای صفحه -->
-        <header class="h-16 border-b border-slate-800/60 flex items-center justify-between px-6 bg-slate-950/40 backdrop-blur-md z-10">
+    <!-- بخش اصلی چت و ابزارها -->
+    <main class="flex-1 flex flex-col h-full bg-[#080c14]">
+        <!-- هدر -->
+        <header class="h-16 border-b border-gray-800/60 flex items-center justify-between px-6 bg-[#0d1322]/50 backdrop-blur">
             <div class="flex items-center gap-3">
-                <span id="mode-badge" class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-2">
-                    <i class="fa-solid fa-comments"></i>
-                    <span id="mode-title-text">گفتگوی آزاد</span>
+                <span class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-blue-500"></i>
+                    NexusAI Hub
                 </span>
             </div>
-            <div class="text-xs text-slate-400 font-mono">v1.0.0-nexus</div>
+            <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                سیستم آماده
+            </div>
         </header>
 
-        <!-- لیست پیام‌ها -->
+        <!-- محتوای وسط صفحه -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
-            <!-- پیام خوش‌آمدگویی -->
-            <div class="flex items-start gap-4 max-w-3xl">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shrink-0 shadow-lg shadow-blue-500/20 font-bold">AI</div>
-                <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-slate-200 shadow-xl">
-                    سلام! من <strong class="text-white">NexusAI</strong> هستم. هاب هوش مصنوعی شما با محیطی کاملاً مشکی و ابزارهای متنوع. از منوی کناری می‌توانید حالت مورد نظر خود را انتخاب کنید (آموزش، تولید تصویر، صوتی یا برنامه‌نویسی). امروز چطور می‌توانم کمکتان کنم؟
+            <!-- پیام خوش‌آمدگویی و دکمه‌های اصلی -->
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shrink-0 shadow-lg font-bold">AI</div>
+                    <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 shadow-xl w-full">
+                        سلام! من <strong class="text-white">NexusAI</strong> هستم. برای شروع، یکی از دکمه‌های زیر را انتخاب کنید یا مستقیماً پیام خود را بنویسید:
+                    </div>
+                </div>
+
+                <!-- **دکمه‌های اصلی درخواستی شما** -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <!-- دکمه حالت درس -->
+                    <button onclick="setMode('study')" id="card-study" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl shrink-0">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">حالت درس</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">آموزش و یادگیری قدم‌به‌قدم مباحث</p>
+                        </div>
+                    </button>
+
+                    <!-- دکمه عکس‌سازی -->
+                    <button onclick="setMode('image')" id="card-image" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl shrink-0">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">عکس‌سازی</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">تولید تصویر با توصیف متنی شما</p>
+                        </div>
+                    </button>
+
+                    <!-- دکمه گفتگوی صوتی -->
+                    <button onclick="setMode('voice')" id="card-voice" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                        <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl shrink-0">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">گفتگوی صوتی</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">مکالمه صوتی و شنیدن پاسخ‌ها</p>
+                        </div>
+                    </button>
+
+                    <!-- دکمه ساخت کد -->
+                    <button onclick="setMode('code')" id="card-code" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl shrink-0">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">ساخت کد</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">برنامه‌نویسی و تولید کدهای دقیق</p>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- باکس تایپ و ارسال پیام -->
-        <div class="p-5 border-t border-slate-800/60 bg-slate-950/40 backdrop-blur-md">
-            <div class="max-w-4xl mx-auto flex items-center gap-3 bg-slate-900/90 border border-slate-700/80 rounded-2xl p-2 shadow-2xl focus-within:border-blue-500 transition-all">
-                <input type="text" id="user-input" placeholder="پیام خود را به NexusAI بنویسید..." class="flex-1 bg-transparent border-none outline-none px-4 text-sm text-slate-200 placeholder-slate-500">
-                <button onclick="sendMessage()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white w-11 h-11 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-blue-600/30">
+        <!-- باکس ارسال پیام -->
+        <div class="p-4 border-t border-gray-800/60 bg-[#0d1322]/50">
+            <div class="max-w-3xl mx-auto flex items-center gap-3 bg-[#111827] border border-gray-700 rounded-2xl p-2 shadow-2xl focus-within:border-blue-500 transition-all">
+                <input type="text" id="user-input" placeholder="پیام خود را بنویسید..." class="flex-1 bg-transparent border-none outline-none px-4 text-sm text-gray-200 placeholder-gray-500">
+                <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-md">
                     <i class="fa-solid fa-paper-plane text-sm"></i>
                 </button>
             </div>
@@ -133,32 +156,35 @@
 
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const chatContainer = document.getElementById('chat-container');
             
-            const titleText = document.getElementById('mode-title-text');
-            const badgeIcon = document.querySelector('#mode-badge i');
+            let modeName = '';
+            let replyText = '';
 
-            if(mode === 'general') {
-                document.getElementById('btn-general').classList.add('active');
-                titleText.innerText = 'گفتگوی آزاد';
-                badgeIcon.className = 'fa-solid fa-comments';
-            } else if(mode === 'study') {
-                document.getElementById('btn-study').classList.add('active');
-                titleText.innerText = 'حالت درس (آموزشی)';
-                badgeIcon.className = 'fa-solid fa-graduation-cap';
+            if(mode === 'study') {
+                modeName = 'حالت درس';
+                replyText = '📖 **[حالت درس فعال شد]:** مبحث یا درسی که می‌خواهید یاد بگیرید را بنویسید تا ساده و بخش‌به‌بخش توضیح دهم.';
             } else if(mode === 'image') {
-                document.getElementById('btn-image').classList.add('active');
-                titleText.innerText = 'تصویرسازی';
-                badgeIcon.className = 'fa-solid fa-wand-magic-sparkles';
+                modeName = 'عکس‌سازی';
+                replyText = '🎨 **[حالت عکس‌سازی فعال شد]:** توصیف عکسی که می‌خواهید را بنویسید (مثلاً: یک گربه‌ی فضایی در کهکشان).';
             } else if(mode === 'voice') {
-                document.getElementById('btn-voice').classList.add('active');
-                titleText.innerText = 'حالت صوتی';
-                badgeIcon.className = 'fa-solid fa-microphone-lines';
+                modeName = 'گفتگوی صوتی';
+                replyText = '🎙️ **[حالت صوتی فعال شد]:** میکروفون آماده است. حرف بزنید تا پاسخ صوتی دریافت کنید.';
             } else if(mode === 'code') {
-                document.getElementById('btn-code').classList.add('active');
-                titleText.innerText = 'حالت برنامه‌نویسی';
-                badgeIcon.className = 'fa-solid fa-code';
+                modeName = 'ساخت کد';
+                replyText = '💻 **[حالت ساخت کد فعال شد]:** چه برنامه‌ای یا با چه زبانی می‌خواهید کد بنویسم؟ درخواست خود را ارسال کنید.';
             }
+
+            // درج پیام تغییر حالت در صفحه
+            const noticeHTML = `
+                <div class="max-w-3xl mx-auto flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                    <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full whitespace-pre-line shadow-xl border border-blue-500/30">
+                        ${replyText}
+                    </div>
+                </div>`;
+            chatContainer.insertAdjacentHTML('beforeend', noticeHTML);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function sendMessage() {
@@ -170,28 +196,22 @@
 
             // درج پیام کاربر
             const userMsgHTML = `
-                <div class="flex items-start gap-4 max-w-3xl mr-auto justify-end">
-                    <div class="message-user p-5 rounded-2xl text-sm leading-relaxed text-white shadow-lg">${text}</div>
-                    <div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 text-xs shrink-0 font-bold shadow-md">شما</div>
+                <div class="max-w-3xl mx-auto flex items-start gap-4 justify-end">
+                    <div class="message-user p-4 rounded-2xl text-sm leading-relaxed text-white shadow-lg">${text}</div>
+                    <div class="w-10 h-10 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-300 text-xs shrink-0 font-bold">شما</div>
                 </div>`;
             chatContainer.insertAdjacentHTML('beforeend', userMsgHTML);
             inputField.value = '';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // پاسخ هوش مصنوعی بر اساس حالت انتخابی
+            // پاسخ مصنوعی هوش مصنوعی
             setTimeout(() => {
-                let replyText = "درخواست شما با موفقیت در هاب NexusAI پردازش شد.";
-                if(currentMode === 'study') replyText = "📖 **[سیستم آموزشی NexusAI]:** بیایید این درس را بخش به بخش و کاملاً ساده با هم یاد بگیریم. سوال یا مبحث خود را بفرستید.";
-                else if(currentMode === 'image') replyText = "🎨 **[استودیوی تصویرسازی]:** پرامپت شما برای خلق تصویر دریافت شد. (تصویر شما در حال رندر است)...";
-                else if(currentMode === 'voice') replyText = "🎙️ **[دستیار صوتی]:** ورودی صوتی شما تحلیل شد. آماده پاسخگویی صوتی به شما هستم.";
-                else if(currentMode === 'code') replyText = "💻 **[محیط برنامه‌نویسی]:** کد درخواستی شما آماده شد:\n
-```javascript\n// NexusAI Code Engine\nfunction initNexus() {\n    console.log('NexusAI Coding Mode Active!');\n}\ninitNexus();\n
-```";
-
                 const aiMsgHTML = `
-                    <div class="flex items-start gap-4 max-w-3xl">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shrink-0 shadow-lg shadow-blue-500/20 font-bold">AI</div>
-                        <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-slate-200 shadow-xl whitespace-pre-line">${replyText}</div>
+                    <div class="max-w-3xl mx-auto flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                        <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl">
+                            درخواست شما دریافت شد. در حال پردازش در هاب NexusAI...
+                        </div>
                     </div>`;
                 chatContainer.insertAdjacentHTML('beforeend', aiMsgHTML);
                 chatContainer.scrollTop = chatContainer.scrollHeight;

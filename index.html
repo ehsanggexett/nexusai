@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAI - هاب هوش مصنوعی</title>
+    <!-- Tailwind CSS برای استایل‌دهی سریع و مدرن -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome برای آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: Tahoma, sans-serif;
+        }
+        .sidebar {
+            background-color: #161b22;
+            border-left: 1px solid #30363d;
+        }
+        .chat-box {
+            background-color: #0d1117;
+        }
+        .message-ai {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+        }
+        .message-user {
+            background-color: #1f6feb;
+            color: #ffffff;
+        }
+        .btn-mode {
+            transition: all 0.2s ease;
+        }
+        .btn-mode:hover, .btn-mode.active {
+            background-color: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- منوی کناری (Sidebar) -->
+    <aside class="w-72 sidebar flex flex-col justify-between hidden md:flex">
+        <div>
+            <!-- لوگو و نام -->
+            <div class="p-5 flex items-center gap-3 border-b border-gray-800">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-wider text-white">NexusAI</h1>
+            </div>
+
+            <!-- دکمه‌های قابلیت‌ها -->
+            <div class="p-4 space-y-2">
+                <p class="text-xs text-gray-500 px-2 mb-2 font-semibold">حالت‌های هوش مصنوعی</p>
+                
+                <button onclick="setMode('general')" id="btn-general" class="btn-mode active w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-gray-300">
+                    <i class="fa-solid fa-comments text-blue-400"></i>
+                    <span>گفتگوی آزاد</span>
+                </button>
+
+                <button onclick="setMode('study')" id="btn-study" class="btn-mode w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-gray-300">
+                    <i class="fa-solid fa-graduation-cap text-green-400"></i>
+                    <span>حالت درس (آموزشی)</span>
+                </button>
+
+                <button onclick="setMode('image')" id="btn-image" class="btn-mode w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-gray-300">
+                    <i class="fa-solid fa-image text-purple-400"></i>
+                    <span>تصویرسازی</span>
+                </button>
+
+                <button onclick="setMode('voice')" id="btn-voice" class="btn-mode w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-gray-300">
+                    <i class="fa-solid fa-microphone text-red-400"></i>
+                    <span>حالت صوتی</span>
+                </button>
+
+                <button onclick="setMode('code')" id="btn-code" class="btn-mode w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium text-gray-300">
+                    <i class="fa-solid fa-code text-yellow-400"></i>
+                    <span>حالت برنامه‌نویسی</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- فوتر سایدبار -->
+        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">
+            NexusAI Hub &copy; 2026
+        </div>
+    </aside>
+
+    <!-- بخش اصلی چت و تعامل -->
+    <main class="flex-1 flex flex-col h-full chat-box">
+        <!-- هدر بالای صفحه -->
+        <header class="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-[#161b22]/50 backdrop-blur">
+            <div class="flex items-center gap-3">
+                <span id="current-mode-title" class="text-sm font-semibold text-white bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">
+                    گفتگوی آزاد
+                </span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-xs text-gray-400">سیستم آنلاین</span>
+            </div>
+        </header>
+
+        <!-- باکس پیام‌ها -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- پیام خوش‌آمدگویی اولیه -->
+            <div class="flex items-start gap-3 max-w-2xl">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shrink-0 font-bold">AI</div>
+                <div class="message-ai p-4 rounded-2xl text-sm leading-relaxed text-gray-200">
+                    سلام! من **NexusAI** هستم؛ هاب هوش مصنوعی شما. از منوی سمت چپ می‌توانید حالت‌های مختلف (درس، تصویرسازی، صوتی یا برنامه‌نویسی) را انتخاب کنید تا کمکتان کنم. چه کمکی از دست من برمی‌آید؟
+                </div>
+            </div>
+        </div>
+
+        <!-- باکس ورودی پیام و دکمه ارسال -->
+        <div class="p-4 border-t border-gray-800 bg-[#161b22]/30">
+            <div class="max-w-4xl mx-auto flex items-center gap-2 bg-[#161b22] border border-gray-700 rounded-2xl p-2 shadow-inner focus-within:border-blue-500 transition-colors">
+                <input type="text" id="user-input" placeholder="پیام خود را اینجا بنویسید..." class="flex-1 bg-transparent border-none outline-none px-4 text-sm text-gray-200 placeholder-gray-500">
+                <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-md">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentMode = 'general';
+
+        function setMode(mode) {
+            currentMode = mode;
+            // حذف کلاس active از همه دکمه‌ها
+            document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
+            
+            // فعال کردن دکمه انتخاب شده و تغییر عنوان هدر
+            const titleEl = document.getElementById('current-mode-title');
+            if(mode === 'general') {
+                document.getElementById('btn-general').classList.add('active');
+                titleEl.innerText = 'گفتگوی آزاد';
+            } else if(mode === 'study') {
+                document.getElementById('btn-study').classList.add('active');
+                titleEl.innerText = 'حالت درس (آموزشی)';
+            } else if(mode === 'image') {
+                document.getElementById('btn-image').classList.add('active');
+                titleEl.innerText = 'تصویرسازی';
+            } else if(mode === 'voice') {
+                document.getElementById('btn-voice').classList.add('active');
+                titleEl.innerText = 'حالت صوتی';
+            } else if(mode === 'code') {
+                document.getElementById('btn-code').classList.add('active');
+                titleEl.innerText = 'حالت برنامه‌نویسی';
+            }
+        }
+
+        function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const text = inputField.value.trim();
+            if(!text) return;
+
+            const chatContainer = document.getElementById('chat-container');
+
+            // درج پیام کاربر
+            const userMsgHTML = `
+                <div class="flex items-start gap-3 max-w-2xl mr-auto justify-end">
+                    <div class="message-user p-4 rounded-2xl text-sm leading-relaxed">${text}</div>
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs shrink-0 font-bold">شما</div>
+                </div>`;
+            chatContainer.insertAdjacentHTML('beforeend', userMsgHTML);
+            inputField.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // پاسخ نمایشی هوش مصنوعی متناسب با حالت انتخابی
+            setTimeout(() => {
+                let replyText = "پیام شما دریافت شد. در حال پردازش توسط NexusAI...";
+                if(currentMode === 'study') replyText = "📖 **[حالت درس]:** بیایید این مبحث درسی را قدم به قدم و ساده با هم بررسی کنیم...";
+                else if(currentMode === 'image') replyText = "🎨 **[تصویرسازی]:** پرامپت شما دریافت شد. (در نسخه نهایی اینجا تصویر تولیدشده نمایش داده می‌شود)...";
+                else if(currentMode === 'voice') replyText = "🎙️ **[حالت صوتی]:** صدای شما دریافت و تحلیل شد (پاسخ صوتی فعال است)...";
+                else if(currentMode === 'code') replyText = "💻 **[برنامه‌نویسی]:** کدهای درخواستی شما آماده شد:\n
+```javascript\n// نمونه کد تولیدی\nconsole.log('Hello from NexusAI Code Assistant!');\n
+```";
+
+                const aiMsgHTML = `
+                    <div class="flex items-start gap-3 max-w-2xl">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs shrink-0 font-bold">AI</div>
+                        <div class="message-ai p-4 rounded-2xl text-sm leading-relaxed text-gray-200 whitespace-pre-line">${replyText}</div>
+                    </div>`;
+                chatContainer.insertAdjacentHTML('beforeend', aiMsgHTML);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 800);
+        }
+
+        // ارسال پیام با کلید Enter
+        document.getElementById('user-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

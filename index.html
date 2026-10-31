@@ -23,10 +23,6 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
         }
-        .action-card.active {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: #3b82f6;
-        }
         .message-ai { background: #111827; border: 1px solid #1f2937; }
         .message-user { background: #2563eb; }
         ::-webkit-scrollbar { width: 6px; }
@@ -39,7 +35,6 @@
     <!-- سایدبار سمت راست -->
     <aside class="w-72 sidebar flex flex-col justify-between hidden lg:flex select-none">
         <div>
-            <!-- لوگو -->
             <div class="p-6 flex items-center gap-3 border-b border-gray-800/60">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-lg shadow-lg shadow-blue-600/30">
                     <i class="fa-solid fa-atom"></i>
@@ -50,23 +45,26 @@
                 </div>
             </div>
 
-            <!-- منوی اصلی سایدبار -->
             <div class="p-4 space-y-2">
-                <button onclick="setMode('general')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800/55 transition-colors">
+                <button onclick="resetChat()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800/55 transition-colors">
                     <i class="fa-solid fa-house text-blue-400 w-5"></i>
-                    <span>صفحه اصلی</span>
+                    <span>صفحه اصلی / چت جدید</span>
                 </button>
             </div>
         </div>
 
-        <div class="p-4 border-t border-gray-800/60 text-xs text-gray-500 text-center">
-            NexusAI Engine &copy; 2026
+        <!-- تنظیم کلید API در سایدبار -->
+        <div class="p-4 border-t border-gray-800/60">
+            <label class="block text-xs text-gray-400 mb-2 font-medium">کلید API گوگل (Gemini):</label>
+            <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#111827] border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-200 outline-none focus:border-blue-500">
+            <button onclick="saveApiKey()" class="mt-2 w-full bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white text-xs py-2 rounded-xl border border-blue-500/30 transition-all font-medium">
+                ذخیره کلید
+            </button>
         </div>
     </aside>
 
     <!-- بخش اصلی چت و ابزارها -->
     <main class="flex-1 flex flex-col h-full bg-[#080c14]">
-        <!-- هدر -->
         <header class="h-16 border-b border-gray-800/60 flex items-center justify-between px-6 bg-[#0d1322]/50 backdrop-blur">
             <div class="flex items-center gap-3">
                 <span class="text-sm font-bold text-white flex items-center gap-2">
@@ -74,66 +72,57 @@
                     NexusAI Hub
                 </span>
             </div>
-            <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                سیستم آماده
-            </div>
         </header>
 
         <!-- محتوای وسط صفحه -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
-            <!-- پیام خوش‌آمدگویی و دکمه‌های اصلی -->
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="flex items-start gap-4">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shrink-0 shadow-lg font-bold">AI</div>
                     <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 shadow-xl w-full">
-                        سلام! من <strong class="text-white">NexusAI</strong> هستم. برای شروع، یکی از دکمه‌های زیر را انتخاب کنید یا مستقیماً پیام خود را بنویسید:
+                        سلام! برای شروع، کلید API خود را در منوی سمت چپ وارد کرده و ذخیره نمایید. سپس از دکمه‌های زیر یا باکس پیام استفاده کنید:
                     </div>
                 </div>
 
-                <!-- **دکمه‌های اصلی درخواستی شما** -->
+                <!-- دکمه‌های اصلی درخواستی -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <!-- دکمه حالت درس -->
-                    <button onclick="setMode('study')" id="card-study" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                    <button onclick="setMode('study')" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
                         <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl shrink-0">
                             <i class="fa-solid fa-graduation-cap"></i>
                         </div>
                         <div>
                             <h3 class="font-bold text-white text-sm">حالت درس</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">آموزش و یادگیری قدم‌به‌قدم مباحث</p>
+                            <p class="text-xs text-gray-400 mt-0.5">آموزش و یادگیری قدم‌به‌قدم</p>
                         </div>
                     </button>
 
-                    <!-- دکمه عکس‌سازی -->
-                    <button onclick="setMode('image')" id="card-image" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                    <button onclick="setMode('image')" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
                         <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl shrink-0">
                             <i class="fa-solid fa-image"></i>
                         </div>
                         <div>
                             <h3 class="font-bold text-white text-sm">عکس‌سازی</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">تولید تصویر با توصیف متنی شما</p>
+                            <p class="text-xs text-gray-400 mt-0.5">تولید تصویر با هوش مصنوعی</p>
                         </div>
                     </button>
 
-                    <!-- دکمه گفتگوی صوتی -->
-                    <button onclick="setMode('voice')" id="card-voice" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                    <button onclick="setMode('voice')" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
                         <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl shrink-0">
                             <i class="fa-solid fa-microphone"></i>
                         </div>
                         <div>
                             <h3 class="font-bold text-white text-sm">گفتگوی صوتی</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">مکالمه صوتی و شنیدن پاسخ‌ها</p>
+                            <p class="text-xs text-gray-400 mt-0.5">مکالمه صوتی هوشمند</p>
                         </div>
                     </button>
 
-                    <!-- دکمه ساخت کد -->
-                    <button onclick="setMode('code')" id="card-code" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
+                    <button onclick="setMode('code')" class="action-card p-4 rounded-2xl flex items-center gap-4 text-right">
                         <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl shrink-0">
                             <i class="fa-solid fa-code"></i>
                         </div>
                         <div>
                             <h3 class="font-bold text-white text-sm">ساخت کد</h3>
-                            <p class="text-xs text-gray-400 mt-0.5">برنامه‌نویسی و تولید کدهای دقیق</p>
+                            <p class="text-xs text-gray-400 mt-0.5">برنامه‌نویسی و اسکریپت‌نویسی</p>
                         </div>
                     </button>
                 </div>
@@ -153,41 +142,43 @@
 
     <script>
         let currentMode = 'general';
+        let apiKey = localStorage.getItem('nexus_gemini_key') || '';
+
+        window.onload = function() {
+            if(apiKey) {
+                document.getElementById('api-key-input').value = apiKey;
+            }
+        }
+
+        function saveApiKey() {
+            const keyVal = document.getElementById('api-key-input').value.trim();
+            if(keyVal) {
+                apiKey = keyVal;
+                localStorage.setItem('nexus_gemini_key', apiKey);
+                alert('کلید API با موفقیت ذخیره شد!');
+            } else {
+                alert('لطفاً یک کلید معتبر وارد کنید.');
+            }
+        }
 
         function setMode(mode) {
             currentMode = mode;
-            const chatContainer = document.getElementById('chat-container');
+            let promptText = "";
+            if(mode === 'study') promptText = "حالت درس فعال شد. لطفاً به عنوان یک معلم خصوصی و ساده‌گو عمل کن و به من کمک کن مبحث زیر را یاد بگیرم: ";
+            else if(mode === 'image') promptText = "حالت عکس‌سازی فعال شد. برای ساخت تصویر، توصیف دقیق زیر را به صورت پرامپت انگلیسی با جزئیات آماده کن: ";
+            else if(mode === 'voice') promptText = "حالت گفتگوی صوتی فعال شد. لطفاً پاسخی کوتاه و مکالمه‌محور به پیام من بده: ";
+            else if(mode === 'code') promptText = "حالت ساخت کد فعال شد. لطفاً به عنوان یک برنامه نویس حرفه‌ای، کد دقیق و بهینه برای درخواست زیر بنویس: ";
             
-            let modeName = '';
-            let replyText = '';
-
-            if(mode === 'study') {
-                modeName = 'حالت درس';
-                replyText = '📖 **[حالت درس فعال شد]:** مبحث یا درسی که می‌خواهید یاد بگیرید را بنویسید تا ساده و بخش‌به‌بخش توضیح دهم.';
-            } else if(mode === 'image') {
-                modeName = 'عکس‌سازی';
-                replyText = '🎨 **[حالت عکس‌سازی فعال شد]:** توصیف عکسی که می‌خواهید را بنویسید (مثلاً: یک گربه‌ی فضایی در کهکشان).';
-            } else if(mode === 'voice') {
-                modeName = 'گفتگوی صوتی';
-                replyText = '🎙️ **[حالت صوتی فعال شد]:** میکروفون آماده است. حرف بزنید تا پاسخ صوتی دریافت کنید.';
-            } else if(mode === 'code') {
-                modeName = 'ساخت کد';
-                replyText = '💻 **[حالت ساخت کد فعال شد]:** چه برنامه‌ای یا با چه زبانی می‌خواهید کد بنویسم؟ درخواست خود را ارسال کنید.';
-            }
-
-            // درج پیام تغییر حالت در صفحه
-            const noticeHTML = `
-                <div class="max-w-3xl mx-auto flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
-                    <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full whitespace-pre-line shadow-xl border border-blue-500/30">
-                        ${replyText}
-                    </div>
-                </div>`;
-            chatContainer.insertAdjacentHTML('beforeend', noticeHTML);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            document.getElementById('user-input').placeholder = promptText.slice(0, 35) + "...";
+            document.getElementById('user-input').focus();
         }
 
-        function sendMessage() {
+        async function sendMessage() {
+            if(!apiKey) {
+                alert('لطفاً ابتدا کلید Google Gemini API خود را در پنل سمت چپ وارد و ذخیره کنید.');
+                return;
+            }
+
             const inputField = document.getElementById('user-input');
             const text = inputField.value.trim();
             if(!text) return;
@@ -195,27 +186,64 @@
             const chatContainer = document.getElementById('chat-container');
 
             // درج پیام کاربر
-            const userMsgHTML = `
+            chatContainer.insertAdjacentHTML('beforeend', `
                 <div class="max-w-3xl mx-auto flex items-start gap-4 justify-end">
                     <div class="message-user p-4 rounded-2xl text-sm leading-relaxed text-white shadow-lg">${text}</div>
                     <div class="w-10 h-10 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-300 text-xs shrink-0 font-bold">شما</div>
-                </div>`;
-            chatContainer.insertAdjacentHTML('beforeend', userMsgHTML);
+                </div>`);
+            
             inputField.value = '';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // پاسخ مصنوعی هوش مصنوعی
-            setTimeout(() => {
-                const aiMsgHTML = `
+            // پیام در حال بارگذاری
+            const loadingId = 'loading-' + Date.now();
+            chatContainer.insertAdjacentHTML('beforeend', `
+                <div id="${loadingId}" class="max-w-3xl mx-auto flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                    <div class="message-ai p-5 rounded-2xl text-sm text-gray-400 w-full shadow-xl flex items-center gap-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-blue-500"></i> در حال پردازش پاسخ...
+                    </div>
+                </div>`);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                // ارسال درخواست به Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }]
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                if(data.candidates && data.candidates[0].content.parts[0].text) {
+                    const aiReply = data.candidates[0].content.parts[0].text;
+                    chatContainer.insertAdjacentHTML('beforeend', `
+                        <div class="max-w-3xl mx-auto flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                            <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl whitespace-pre-wrap">${aiReply}</div>
+                        </div>`);
+                } else {
+                    throw new Error('پاسخ نامعتبر از سرور');
+                }
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                chatContainer.insertAdjacentHTML('beforeend', `
                     <div class="max-w-3xl mx-auto flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
-                        <div class="message-ai p-5 rounded-2xl text-sm leading-relaxed text-gray-200 w-full shadow-xl">
-                            درخواست شما دریافت شد. در حال پردازش در هاب NexusAI...
+                        <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white text-sm shrink-0 font-bold">AI</div>
+                        <div class="message-ai p-5 rounded-2xl text-sm text-red-400 w-full shadow-xl">
+                            خطا در ارتباط با هوش مصنوعی. لطفاً از صحت کلید API خود مطمئن شوید.
                         </div>
-                    </div>`;
-                chatContainer.insertAdjacentHTML('beforeend', aiMsgHTML);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 800);
+                    </div>`);
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function resetChat() {
+            location.reload();
         }
 
         document.getElementById('user-input').addEventListener('keypress', function (e) {
